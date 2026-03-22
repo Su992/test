@@ -40,4 +40,8 @@ public class SysUserController {
         boolean success = userService.save(user);
         return success ? Result.success(true) : Result.error("注册失败");
     }
+    @PutMapping("/update")
+    public Result<Boolean> update(@RequestBody SysUser user) {
+        return Result.success(userService.updateById(user));
+    }
 }

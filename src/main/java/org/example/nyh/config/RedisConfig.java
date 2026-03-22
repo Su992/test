@@ -1,4 +1,3 @@
-/*
 package org.example.nyh.config;
 
 import org.springframework.context.annotation.Bean;
@@ -23,4 +22,4 @@ public class RedisConfig {
         
         return template;
     }
-}*/
+}
