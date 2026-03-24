@@ -25,6 +25,7 @@ public class AdminUserController {
         
         Page<SysUser> page = new Page<>(current, size);
         LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SysUser::getRole, 1);
         if (StringUtils.hasText(username)) {
             wrapper.like(SysUser::getUsername, username);
         }

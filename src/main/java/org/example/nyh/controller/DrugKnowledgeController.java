@@ -34,4 +34,22 @@ public class DrugKnowledgeController {
         return Result.success(resultPage);
     }
 
+    // 新增科普
+    @PostMapping
+    public Result<Boolean> add(@RequestBody DrugKnowledge drugKnowledge) {
+        return Result.success(drugKnowledgeService.save(drugKnowledge));
+    }
+
+    // 修改科普
+    @PutMapping
+    public Result<Boolean> update(@RequestBody DrugKnowledge drugKnowledge) {
+        return Result.success(drugKnowledgeService.updateById(drugKnowledge));
+    }
+
+    // 删除科普
+    @DeleteMapping("/{id}")
+    public Result<Boolean> delete(@PathVariable Long id) {
+        return Result.success(drugKnowledgeService.removeById(id));
+    }
+
 }

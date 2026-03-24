@@ -32,6 +32,7 @@ public class AdminAnnouncementController {
 
     @PostMapping
     public Result<Boolean> add(@RequestBody SysAnnouncement announcement) {
+        announcement.setCreateTime(java.time.LocalDateTime.now());
         return Result.success(announcementService.save(announcement));
     }
 
