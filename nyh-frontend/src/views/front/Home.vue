@@ -28,7 +28,7 @@
                   </el-icon></div>
                 <span class="card-title">最新平台公告</span>
               </div>
-              <el-button link type="primary" @click="$router.push('/knowledge')">更多动态 <el-icon>
+              <el-button link type="primary" @click="$router.push('/announcement-list')">更多动态 <el-icon>
                   <ArrowRight />
                 </el-icon></el-button>
             </div>

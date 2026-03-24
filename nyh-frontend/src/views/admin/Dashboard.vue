@@ -36,37 +36,79 @@
             </el-col>
         </el-row>
 
-        <el-card shadow="never" class="welcome-card mt-4">
+        <el-card shadow="never" class="chart-card mt-4">
             <template #header>
                 <div class="card-header">
-                    <span>快速操作与系统状态</span>
+                    <span>平台核心数据可视化概览</span>
                 </div>
             </template>
-            <div class="welcome-content">
-                <el-empty description="数据可视化图表开发中..." :image-size="120" />
-            </div>
+            <div class="chart-content" ref="chartRef" style="width: 100%; height: 400px;"></div>
         </el-card>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { UserFilled, Comment, Reading } from '@element-plus/icons-vue'
+import * as echarts from 'echarts'
 import { getAdminDashboardAPI } from '../../api/index'
 
 const statData = ref({})
+const chartRef = ref(null)
 
 onMounted(async () => {
     try {
         const res = await getAdminDashboardAPI()
         statData.value = res || {}
+
+        // 等待 DOM 渲染完成后初始化图表
+        await nextTick()
+        initChart()
     } catch (error) {
         console.error('获取统计数据失败', error)
     }
 })
+
+const initChart = () => {
+    if (!chartRef.value) return
+    const myChart = echarts.init(chartRef.value)
+
+    const option = {
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+        grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+        xAxis: [
+            {
+                type: 'category',
+                data: ['平台注册用户', '留言投稿数量', '在线测试题库'],
+                axisTick: { alignWithLabel: true }
+            }
+        ],
+        yAxis: [{ type: 'value' }],
+        series: [
+            {
+                name: '数量',
+                type: 'bar',
+                barWidth: '40%',
+                data: [
+                    { value: statData.value.totalUsers || 0, itemStyle: { color: '#409EFF' } },
+                    { value: statData.value.totalSubmissions || 0, itemStyle: { color: '#67C23A' } },
+                    { value: statData.value.totalQuestions || 0, itemStyle: { color: '#E6A23C' } }
+                ],
+                label: { show: true, position: 'top' }
+            }
+        ]
+    }
+    myChart.setOption(option)
+
+    // 监听窗口缩放，自动重绘图表
+    window.addEventListener('resize', () => {
+        myChart.resize()
+    })
+}
 </script>
 
 <style scoped>
+/* 原有的 data-card 样式保持不变 */
 .data-card {
     display: flex;
     align-items: center;
@@ -121,7 +163,7 @@ onMounted(async () => {
     margin-top: 20px;
 }
 
-.welcome-card {
+.chart-card {
     border-radius: 8px;
 }
 

@@ -77,8 +77,10 @@
 import { ref, computed } from 'vue'
 import { Trophy } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getRandomQuestionsAPI } from '../../api/index'
+import { getRandomQuestionsAPI ,addTestRecordAPI} from '../../api/index'
+import { useUserStore } from '../../store/user'
 
+const userStore = useUserStore()
 const loading = ref(false)
 const isStarted = ref(false)
 const isFinished = ref(false)
@@ -122,23 +124,32 @@ const startTest = async () => {
 const prevQuestion = () => { currentIndex.value-- }
 const nextQuestion = () => { currentIndex.value++ }
 
-// 交卷
 const submitTest = () => {
-    ElMessageBox.confirm('确定要交卷吗？', '提示', { confirmButtonText: '确定', cancelButtonText: '检查一下' })
-        .then(() => {
-            // 计算分数
-            let correctCount = 0
-            questions.value.forEach(q => {
-                if (answers.value[q.id] === q.correctAnswer) {
-                    correctCount++
-                }
-            })
-            score.value = Math.round((correctCount / questions.value.length) * 100)
-            isFinished.value = true
-        })
-        .catch(() => { })
-}
+  ElMessageBox.confirm('确定要交卷吗？', '提示', { confirmButtonText: '确定', cancelButtonText: '检查一下' })
+    .then(async () => {
+      // 1. 计算分数
+      let correctCount = 0
+      questions.value.forEach(q => {
+        if (answers.value[q.id] === q.correctAnswer) correctCount++
+      })
+      score.value = Math.round((correctCount / questions.value.length) * 100)
+      isFinished.value = true
 
+      // 2. 保存到数据库 (必须是登录状态)
+      if (userStore.userInfo) {
+        try {
+          await addTestRecordAPI({
+            userId: userStore.userInfo.id,
+            score: score.value,
+            totalQuestions: questions.value.length
+          })
+        } catch (error) {
+          console.error('测试记录保存失败', error)
+        }
+      }
+    })
+    .catch(() => {})
+}
 // 重置
 const resetTest = () => {
     isStarted.value = false

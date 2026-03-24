@@ -43,3 +43,13 @@ export const getAdminQuestionPageAPI = (params) => request({ url: '/admin/questi
 export const addAdminQuestionAPI = (data) => request({ url: '/admin/question', method: 'post', data })
 export const updateAdminQuestionAPI = (data) => request({ url: '/admin/question', method: 'put', data })
 export const deleteAdminQuestionAPI = (id) => request({ url: `/admin/question/${id}`, method: 'delete' })
+// 7. 首页推荐消息管理
+export const getAdminNewsPageAPI = (params) => request({ url: '/admin/news/page', method: 'get', params })
+export const addAdminNewsAPI = (data) => request({ url: '/admin/news', method: 'post', data })
+export const updateAdminNewsAPI = (data) => request({ url: '/admin/news', method: 'put', data })
+export const deleteAdminNewsAPI = (id) => request({ url: `/admin/news/${id}`, method: 'delete' })
+// 8. 毒品科普管理 (复用了前面的 /drug-knowledge 接口路径)
+export const getAdminKnowledgePageAPI = (params) => request({ url: '/drug-knowledge/page', method: 'get', params })
+// ===== 测试记录接口 =====
+export const addTestRecordAPI = (data) => request({ url: '/test-record/add', method: 'post', data })
+export const getMyTestRecordsAPI = (userId) => request({ url: '/test-record/my-records', method: 'get', params: { userId } })

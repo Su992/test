@@ -20,7 +20,7 @@ const routes = [
         path: 'ai-assistant',
         name: 'AiAssistant',
         component: () => import('../views/front/AiAssistant.vue'),
-        meta: { title: 'AI 禁毒小助手' }
+        meta: { title: 'AI 禁毒小助手',requiresAuth: true }
       },
       {
         path: 'knowledge',
@@ -38,13 +38,19 @@ const routes = [
         path: 'test',
         name: 'Test',
         component: () => import('../views/front/Test.vue'),
-        meta: { title: '在线测试' }
+        meta: { title: '在线测试', requiresAuth: true }
       },
       {
         path: 'profile',
         name: 'Profile',
         component: () => import('../views/front/Profile.vue'),
         meta: { title: '个人中心', requiresAuth: true } 
+      },
+      {
+        path: 'announcement-list',
+        name: 'AnnouncementList',
+        component: () => import('../views/front/AnnouncementList.vue'),
+        meta: { title: '系统公告' }
       }
     ]
   },

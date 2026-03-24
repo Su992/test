@@ -4,7 +4,7 @@ import { ElMessage } from 'element-plus'
 // 创建 axios 实例
 const request = axios.create({
   baseURL: 'http://localhost:8080', // 对应你的 Spring Boot 端口
-  timeout: 15000 // 大模型请求可能较慢，超时时间设长一点，15秒
+  timeout: 60000 // 大模型请求可能较慢，超时时间设长一点，15秒
 })
 
 // 请求拦截器

@@ -51,7 +51,19 @@ const fetchData = async () => {
 }
 onMounted(fetchData)
 
-const handleAdd = () => { Object.assign(form, { id: null, questionText: '' }); dialogVisible.value = true }
+const handleAdd = () => {
+  Object.assign(form, {
+    id: null,
+    questionText: '',
+    optionA: '',
+    optionB: '',
+    optionC: '',
+    optionD: '',
+    correctAnswer: '',
+    analysis: ''
+  });
+  dialogVisible.value = true
+}
 const handleEdit = (row) => { Object.assign(form, row); dialogVisible.value = true }
 
 const submitForm = async () => {

@@ -1,62 +1,67 @@
 <template>
     <div class="profile-container">
         <el-card class="glass-card profile-card" shadow="never">
-            <div class="profile-header">
-                <h2>个人信息中心</h2>
-                <p>管理您的账号信息与偏好设置</p>
-            </div>
+            <el-tabs v-model="activeTab" class="profile-tabs">
+                <el-tab-pane label="基本资料设置" name="info">
+                    <el-form :model="form" ref="formRef" label-width="100px" class="profile-form">
+                        <el-form-item label="用户头像">
+                            <el-upload class="avatar-uploader" action="#" :show-file-list="false" :auto-upload="false"
+                                :on-change="handleAvatarChange">
+                                <img v-if="form.avatar" :src="form.avatar" class="avatar" />
+                                <el-icon v-else class="avatar-uploader-icon">
+                                    <Plus />
+                                </el-icon>
+                            </el-upload>
+                        </el-form-item>
+                        <el-form-item label="登录账号"><el-input v-model="form.username" disabled /></el-form-item>
+                        <el-form-item label="用户昵称" prop="nickname"><el-input v-model="form.nickname" /></el-form-item>
+                        <el-form-item label="兴趣偏好" prop="preferences">
+                            <el-select v-model="form.preferences" multiple style="width: 100%">
+                                <el-option label="传统毒品科普" value="传统毒品" />
+                                <el-option label="新型毒品识别" value="新型毒品" />
+                                <el-option label="禁毒法律法规" value="法律法规" />
+                                <el-option label="心理健康疏导" value="心理健康" />
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="修改密码" prop="password"><el-input v-model="form.password" type="password"
+                                show-password placeholder="不修改请留空" /></el-form-item>
+                        <el-form-item><el-button type="primary" class="gradient-btn" @click="saveProfile"
+                                :loading="saving">保存修改</el-button></el-form-item>
+                    </el-form>
+                </el-tab-pane>
 
-            <el-form :model="form" ref="formRef" label-width="100px" class="profile-form">
-                <el-form-item label="用户头像">
-                    <el-upload class="avatar-uploader" action="#" :show-file-list="false" :auto-upload="false"
-                        :on-change="handleAvatarChange">
-                        <img v-if="form.avatar" :src="form.avatar" class="avatar" />
-                        <el-icon v-else class="avatar-uploader-icon">
-                            <Plus />
-                        </el-icon>
-                    </el-upload>
-                    <div class="el-upload__tip">点击上方图片可更换头像 (目前采用Base64直接存储)</div>
-                </el-form-item>
-
-                <el-form-item label="登录账号">
-                    <el-input v-model="form.username" disabled />
-                </el-form-item>
-
-                <el-form-item label="用户昵称" prop="nickname">
-                    <el-input v-model="form.nickname" placeholder="请输入好听的昵称" />
-                </el-form-item>
-
-                <el-form-item label="兴趣偏好" prop="preferences">
-                    <el-select v-model="form.preferences" multiple placeholder="请选择您感兴趣的禁毒知识方向" style="width: 100%">
-                        <el-option label="传统毒品科普" value="传统毒品" />
-                        <el-option label="新型毒品识别" value="新型毒品" />
-                        <el-option label="禁毒法律法规" value="法律法规" />
-                        <el-option label="心理健康疏导" value="心理健康" />
-                    </el-select>
-                </el-form-item>
-
-                <el-form-item label="修改密码" prop="password">
-                    <el-input v-model="form.password" type="password" show-password placeholder="不修改请留空" />
-                </el-form-item>
-
-                <el-form-item>
-                    <el-button type="primary" class="gradient-btn" @click="saveProfile"
-                        :loading="saving">保存修改</el-button>
-                </el-form-item>
-            </el-form>
+                <el-tab-pane label="我的测试记录" name="records">
+                    <el-table :data="recordList" border stripe style="width: 100%; margin-top: 10px;" height="400">
+                        <el-table-column type="index" label="序号" width="60" align="center" />
+                        <el-table-column prop="createTime" label="交卷时间" width="180">
+                            <template #default="{ row }">{{ formatDate(row.createTime) }}</template>
+                        </el-table-column>
+                        <el-table-column prop="totalQuestions" label="总题数" width="100" align="center" />
+                        <el-table-column prop="score" label="最终得分" align="center">
+                            <template #default="{ row }">
+                                <el-tag :type="row.score >= 90 ? 'success' : (row.score >= 60 ? 'warning' : 'danger')"
+                                    effect="dark" round>
+                                    {{ row.score }} 分
+                                </el-tag>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </el-tab-pane>
+            </el-tabs>
         </el-card>
     </div>
 </template>
-
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '../../store/user'
-import { updateUserInfoAPI } from '../../api/index'
+import { updateUserInfoAPI, getMyTestRecordsAPI } from '../../api/index'
 
 const userStore = useUserStore()
 const saving = ref(false)
+const activeTab = ref('info')
+const recordList = ref([])
 
 const form = reactive({
     id: '',
@@ -108,6 +113,21 @@ const saveProfile = async () => {
     } finally {
         saving.value = false
     }
+}
+
+// 拉取成绩单方法
+const fetchRecords = async (userId) => {
+    try {
+        const res = await getMyTestRecordsAPI(userId)
+        recordList.value = res || []
+    } catch (error) {
+        console.error('获取成绩失败', error)
+    }
+}
+
+const formatDate = (dateStr) => {
+    if (!dateStr) return ''
+    return dateStr.substring(0, 16).replace('T', ' ')
 }
 </script>
 
@@ -177,5 +197,23 @@ const saveProfile = async () => {
     background: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
     border: none;
     padding: 0 30px;
+}
+
+.profile-container {
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+.profile-card {
+    width: 700px;
+    padding: 20px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.profile-tabs :deep(.el-tabs__item) {
+    font-size: 16px;
+    font-weight: bold;
 }
 </style>
