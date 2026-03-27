@@ -53,3 +53,5 @@ export const getAdminKnowledgePageAPI = (params) => request({ url: '/drug-knowle
 // ===== 测试记录接口 =====
 export const addTestRecordAPI = (data) => request({ url: '/test-record/add', method: 'post', data })
 export const getMyTestRecordsAPI = (userId) => request({ url: '/test-record/my-records', method: 'get', params: { userId } })
+// ===== 数据看板统计接口 =====
+export const getPreferencesStatsAPI = () => request({ url: '/admin/data/preferences', method: 'get' })

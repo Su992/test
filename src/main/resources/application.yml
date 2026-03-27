@@ -28,5 +28,5 @@ ai:
     # 如果你是官方API，填 https://api.deepseek.com/chat/completions
     # 如果是硅基流动等平台，填 https://api.siliconflow.cn/v1/chat/completions
     api-url: https://api.siliconflow.cn/v1/chat/completions
-    api-key: your-api-key-here
+    api-key: sk-pxvdplyifpnicoaqlvlxmxeghwbyrzxmxohwracsqkhssrjm
     model: deepseek-ai/DeepSeek-V3
