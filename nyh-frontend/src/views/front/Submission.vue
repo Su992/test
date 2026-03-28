@@ -98,7 +98,6 @@ const fetchPublicList = async () => {
     }
 }
 
-// 提交表单
 const submit = async () => {
     // 1. 登录拦截：必须登录才能投稿
     if (!userStore.userInfo) {
@@ -111,23 +110,28 @@ const submit = async () => {
         if (valid) {
             submitting.value = true
             try {
-                // 构建提交数据，带上用户 ID
+                // 构建提交数据
                 const submitData = {
                     userId: userStore.userInfo.id,
                     title: form.title,
                     content: form.content
                 }
+                
+                // 如果后端查出脏话，返回了 Result.error，这行代码会报错并跳入 catch
                 await addSubmissionAPI(submitData)
 
-                // 成功提示 (后端在这一步已经调用了 AI 预审)
+                // 能走到这里，说明文本干净，AI 返回了 PASS
                 ElMessageBox.alert(
-                    '您的内容已提交成功！目前已进入 AI 安全预审与人工复核通道，通过后将在精选墙展示。',
+                    '您的内容已顺利通过 AI 安全预审！目前已进入人工复核通道，管理员通过后即可展示。',
                     '提交成功',
                     { type: 'success', confirmButtonText: '我知道了' }
                 )
-                formRef.value.resetFields() // 清空表单
+                formRef.value.resetFields() // 成功才清空表单
+                
             } catch (error) {
-                // 报错由 request.js 拦截
+                // 此时 request.js 的拦截器已经自动在页面顶端弹出了红色提示框（如："AI 安全拦截：包含低俗辱骂词汇"）
+                // 所以这里什么都不用写，也不要清空表单，留着让用户自己修改脏话。
+                console.warn('投稿被拦截', error)
             } finally {
                 submitting.value = false
             }
